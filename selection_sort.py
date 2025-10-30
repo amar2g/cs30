@@ -1,3 +1,5 @@
+list = [89,45,68,90,29,34,17]
+
 def selection_sort(x): #x = list/data
     n = len(x) #find num of items in list
     for i in range(n): #iterate through all 
@@ -7,3 +9,5 @@ def selection_sort(x): #x = list/data
                 min_index = j #change min to that smaller num
         x[i], x[min_index] = x[min_index], x[i] #swap smallest with first item
     return x
+
+print(selection_sort(list))
