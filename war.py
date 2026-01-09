@@ -2,90 +2,129 @@ import random
 
 class Card:
     # initialize card w/ suit and value
-    def __init__(self, suit, value): # suit (str) = single char represent the suit h, s, d, c # value (int) = num val of card 1-13
-        self.suit = suit
-        self.value = value
-    
-    def get_english_name(self):
-        value_names = {1: "Ace", 11: "Jack", 12: "Queen", 13: "King"} # value to english 
-        
-        if self.value in value_names: # check for special card
-            value_str = value_names[self.value] 
-        else: # regular card
-            value_str = str(self.value) 
-
-        suit_names = {"H": "Hearts", "S": "Spades","D": "Diamonds", "C": "Clubs"} # suit to english
-        
-        suit_str = suit_names.get(self.suit, self.suit) # handle unexpected values
-        
-        return f"{value_str} of {suit_str}"
+    def __init__(self, value, suit):
+        self.VALUE = value  
+        self.SUIT = suit   
 
 class Deck:
     # initialize new deck by creating 52 card combinations
     def __init__(self):
-        self.cards = [] # store Card objects
-        suits = ["H", "S", "D", "C"]  
-        values = list(range(1, 14)) # 1-13
-        
-        for suit in suits: # iterate through suit and value
-            for value in values:
-                card = Card(suit, value) # create 1 Card object of every combination
-                self.cards.append(card) # fill list
+        self.CARDS = []
+        self.create_deck()
     
-    # randomly shuffle deck
-    def shuffle(self):
-        random.shuffle(self.cards)
+    def create_deck(self):
+        for suit in range(1, 5): # iterate through suits
+            for value in range(1, 14): # iterate through values
+                self.CARDS.append(Card(value, suit))
+        return self.CARDS 
     
-    # draw top card from deck
-    def draw(self):
-        if self.size() > 0:
-            return self.cards.pop() # rmv last card
-        else:
-            return None
-    
-    # calc num of cards in deck
-    def size(self):
-        return len(self.cards)
+    def shuffle_deck(self):
+        random.shuffle(self.CARDS)
 
-class Player:
-    # represent a player w/ a name and cards
-    def __init__(self, name): # name (str), initialize empty card list
-        self.NAME = name
-        self.CARDS = []   
-    
-    def getDeckSize(self): # num of cards in deck
-        return len(self.CARDS)
-    
-    def getCardFrmTopDeck(self): #rmv top card from deck
-        if self.getDeckSize() > 0:
-            return self.CARDS.pop(0)
+    def draw_top_card(self):
+        if len(self.CARDS) > 0: # check if deck has cards
+            return self.CARDS.pop(0) # rmv & return 1st card
         return None 
     
-    def addCardBtmDeck(self, card): #add card to bottom of deck
-        if card is not None: 
-            self.CARDS.append(card)  
+    def get_deck_size(self):
+        return len(self.CARDS)
 
-#create 2 players w/ names above
-PLAYER1 = Player("Rosencrantz")
-PLAYER2 = Player("Guidenstern")
 
-# create deck and shuffle it
-DECK = Deck()
-DECK.shuffle()
+class Player:
+    def __init__(self, name):
+        self.NAME = name # name
+        self.CARDS = [] # personal deck
+    
+    def get_deck_size(self):
+        return len(self.CARDS)
+    
+    def get_card_from_top_of_deck(self):
+        if len(self.CARDS) > 0: # check if player has cards
+            return self.CARDS.pop(0) # rmv 1st card from list
+        return None
+    
+    def add_card_to_bottom_of_deck(self, card):
+        if card is not None: # check if card none before adding
+            self.CARDS.append(card) # append to end of list
 
-# split cards b/t both players
-for i in range(DECK.size() // 2):  
-    PLAYER1.addCardBtmDeck(DECK.draw())
-    PLAYER2.addCardBtmDeck(DECK.draw())
+class Game:
+    def __init__(self):
+        self.PLAYER1 = Player("bill")
+        self.PLAYER2 = Player("donald")
 
-# give odd card left to player 1
-if DECK.size() > 0:  
-    PLAYER1.addCardBtmDeck(DECK.draw())
+        print(f"players created: {self.PLAYER1.NAME} and {self.PLAYER2.NAME}")
+        
+        self.DECK = Deck()
+        
+        # game vars
+        self.ROUND_NUMBER = 0
+        self.IN_PLAY = []
+        self.ROUND_WINNER = 0
+        
+        self.DECK.shuffle_deck()
+        
+        self.deal_deck_to_players()
+    
+    def create_players(self):
+        # created in __init__
+        pass
+    
+    def deal_deck_to_players(self):
+        while self.DECK.get_deck_size() > 0: # deal until deck empty
+            card1 = self.DECK.draw_top_card() 
+            card2 = self.DECK.draw_top_card()
+            # add cards to player decks
+            if card1:
+                self.PLAYER1.add_card_to_bottom_of_deck(card1)
+            if card2:
+                self.PLAYER2.add_card_to_bottom_of_deck(card2)
+    
+    def move_cards_to_winner(self, player):
+        for card in self.IN_PLAY: # append cards to winner deck
+            if card:
+                player.add_card_to_bottom_of_deck(card)
 
-# each player draw top card for comparisson
-CARDS = []
-CARDS.append(PLAYER1.getCardFrmTopDeck())
-CARDS.append(PLAYER2.getCardFrmTopDeck())
+        # clear in play cards
+        self.IN_PLAY = []
+    
+    def run(self):
+        # continue play until round 1000
+        while (self.PLAYER1.get_deck_size() > 0 and 
+               self.PLAYER2.get_deck_size() > 0 and 
+               self.ROUND_NUMBER < 1000):
+            
+            self.ROUND_NUMBER += 1
+            
+            # player draws card
+            card1 = self.PLAYER1.get_card_from_top_of_deck()
+            card2 = self.PLAYER2.get_card_from_top_of_deck()
+            
+            # append cards to in play list
+            self.IN_PLAY.append(card1)
+            self.IN_PLAY.append(card2)
+            
+            # val of ace to 14
+            value1 = card1.VALUE if card1.VALUE != 1 else 14
+            value2 = card2.VALUE if card2.VALUE != 1 else 14
 
-# print values of cards
-print(CARDS[0].value, CARDS[1].value)
+            print(f"round: {self.ROUND_NUMBER}; {self.PLAYER1.NAME}: card value = {card1.VALUE}, {self.PLAYER2.NAME} card value = {card2.VALUE}")
+            
+            if value1 > value2: # calc the winner
+                self.ROUND_WINNER = 1
+                self.move_cards_to_winner(self.PLAYER1)
+                print(f"{self.PLAYER1.NAME} won")
+            elif value2 > value1:
+                self.ROUND_WINNER = 2
+                self.move_cards_to_winner(self.PLAYER2)
+                print(f"{self.PLAYER2.NAME} won")
+            else:
+                self.ROUND_WINNER = random.choice([1, 2]) # if tie then coin flip
+                winner = self.PLAYER1 if self.ROUND_WINNER == 1 else self.PLAYER2
+                print(f"tie, {winner.NAME} won by coin flip")
+                self.move_cards_to_winner(winner)
+
+        print(f"\nrounds played: {self.ROUND_NUMBER}")
+
+if __name__ == "__main__":
+    GAME = Game()
+    GAME.run()
