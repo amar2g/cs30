@@ -23,7 +23,7 @@ class Deck:
 
     def draw_top_card(self):
         if len(self.CARDS) > 0: # check if deck has cards
-            return self.CARDS.pop(0) # rmv & return 1st card
+            return self.CARDS.pop(-1) # rmv & return 1st card
         return None 
     
     def get_deck_size(self):
@@ -40,7 +40,7 @@ class Player:
     
     def get_card_from_top_of_deck(self):
         if len(self.CARDS) > 0: # check if player has cards
-            return self.CARDS.pop(0) # rmv 1st card from list
+            return self.CARDS.pop(-1) # rmv 1st card from list
         return None
     
     def add_card_to_bottom_of_deck(self, card):
@@ -91,7 +91,7 @@ class Game:
         # continue play until round 1000
         while (self.PLAYER1.get_deck_size() > 0 and 
                self.PLAYER2.get_deck_size() > 0 and 
-               self.ROUND_NUMBER < 1000):
+               self.ROUND_NUMBER < 100):
             
             self.ROUND_NUMBER += 1
             
