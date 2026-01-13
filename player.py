@@ -6,6 +6,17 @@ class Card:
         self.VALUE = value  
         self.SUIT = suit   
 
+    def __str__(self):
+        value_names = {1: "ace", 11: "jack", 12: "queen", 13: "king"}
+        suit_names = {1: "hearts", 2: "diamonds", 3: "clubs", 4: "spades"}
+        
+        value = value_names.get(self.VALUE, str(self.VALUE))
+        suit = suit_names[self.SUIT]
+        return f"{value} of {suit}"
+
+    def __repr__(self):
+        return f"Card(value={self.VALUE}, suit={self.SUIT})"
+
 class Deck:
     # initialize new deck by creating 52 card combinations
     def __init__(self):
@@ -71,8 +82,7 @@ def main():
     CARDS.append(PLAYER2.get_card_from_top_of_deck()) # player 2 draws
     
     # print the values of drawn cards
-    print(CARDS[0].VALUE, CARDS[1].VALUE)
-
+    print(CARDS[0], CARDS[1])
 # run everythign
 if __name__ == "__main__":
     main()
