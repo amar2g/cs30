@@ -4,7 +4,18 @@ class Card:
     # initialize card w/ suit and value
     def __init__(self, value, suit):
         self.VALUE = value  
-        self.SUIT = suit   
+        self.SUIT = suit  
+
+    def __str__(self):
+        value_names = {1: "ace", 11: "jack", 12: "queen", 13: "king"}
+        suit_names = {1: "hearts", 2: "diamonds", 3: "clubs", 4: "spades"}
+        
+        value = value_names.get(self.VALUE, str(self.VALUE))
+        suit = suit_names[self.SUIT]
+        return f"{value} of {suit}"
+
+    def __repr__(self):
+        return f"Card(value={self.VALUE}, suit={self.SUIT})" 
 
 class Deck:
     # initialize new deck by creating 52 card combinations
@@ -107,7 +118,7 @@ class Game:
             value1 = card1.VALUE if card1.VALUE != 1 else 14
             value2 = card2.VALUE if card2.VALUE != 1 else 14
 
-            print(f"round: {self.ROUND_NUMBER}; {self.PLAYER1.NAME}: card value = {card1.VALUE}, {self.PLAYER2.NAME} card value = {card2.VALUE}")
+            print(f"round: {self.ROUND_NUMBER}; {self.PLAYER1.NAME}: {card1}, {self.PLAYER2.NAME} {card2}")
             
             if value1 > value2: # calc the winner
                 self.ROUND_WINNER = 1
